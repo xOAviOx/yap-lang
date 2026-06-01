@@ -166,9 +166,162 @@
       footer code {
         color: var(--accent-2);
       }
+
+      /* --- Docs drawer --- */
+      .docs-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.55);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+        z-index: 40;
+      }
+      .docs-backdrop.open {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .docs-drawer {
+        position: fixed;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 580px;
+        max-width: 94vw;
+        background: var(--panel);
+        border-left: 1px solid var(--border);
+        box-shadow: var(--shadow);
+        transform: translateX(102%);
+        transition: transform 0.25s ease;
+        z-index: 41;
+        display: flex;
+        flex-direction: column;
+      }
+      .docs-drawer.open {
+        transform: translateX(0);
+      }
+      .docs-head {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .docs-head h2 {
+        margin: 0;
+        font-size: 17px;
+      }
+      .docs-body {
+        overflow: auto;
+        padding: 4px 20px 48px;
+        font-size: 14px;
+        line-height: 1.6;
+      }
+      .docs-body > p:first-child {
+        margin-top: 14px;
+      }
+      .docs-body h3 {
+        margin: 28px 0 8px;
+        font-size: 15px;
+        color: var(--accent);
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 6px;
+      }
+      .docs-body p {
+        margin: 8px 0;
+      }
+      .docs-body ul {
+        margin: 8px 0;
+        padding-left: 20px;
+      }
+      .docs-body li {
+        margin: 4px 0;
+      }
+      .docs-body code {
+        font-family: var(--mono);
+        font-size: 0.88em;
+        background: rgba(126, 231, 135, 0.08);
+        color: var(--accent-2);
+        padding: 1px 5px;
+        border-radius: 5px;
+      }
+      .docs-body table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 10px 0;
+        font-size: 13px;
+      }
+      .docs-body th,
+      .docs-body td {
+        text-align: left;
+        padding: 7px 10px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      .docs-body th {
+        color: var(--muted);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 11px;
+        letter-spacing: 0.08em;
+      }
+      .docs-body td code {
+        background: none;
+        padding: 0;
+      }
+      .snippet {
+        margin: 10px 0 16px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        overflow: hidden;
+        background: var(--panel-2);
+      }
+      .snippet-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.02);
+      }
+      .snippet-cap {
+        font-size: 11px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      .snippet-actions {
+        margin-left: auto;
+        display: flex;
+        gap: 6px;
+      }
+      .snippet-actions button {
+        padding: 3px 9px;
+        font-size: 12px;
+        border-radius: 7px;
+      }
+      .snippet pre {
+        margin: 0;
+        padding: 12px 14px;
+        overflow: auto;
+      }
+      .snippet code {
+        font-family: var(--mono);
+        font-size: 13px;
+        line-height: 1.5;
+        background: none;
+        color: var(--text);
+        padding: 0;
+        white-space: pre;
+      }
       @media (max-width: 760px) {
         main {
           grid-template-columns: 1fr;
+        }
+        .docs-drawer {
+          width: 100%;
+          max-width: 100%;
         }
       }
     </style>
@@ -180,6 +333,7 @@
       <span class="spacer"></span>
       <label class="tag" for="examples">load example:</label>
       <select id="examples" aria-label="Load an example"></select>
+      <button id="docs-btn" title="Open the language docs">Docs 📖</button>
       <button id="clear" title="Clear the editor">Clear</button>
       <button id="run" class="run" title="Run (Ctrl/Cmd + Enter)">
         Run it 🔥
@@ -207,8 +361,27 @@
       Tip: press <code>Ctrl/Cmd + Enter</code> to run. Variables use
       <code>vibe</code>, print with <code>spill(...)</code>, loop with
       <code>grind</code> / <code>onloop</code>, define functions with
-      <code>bestie</code>.
+      <code>bestie</code>. New here? Hit <code>Docs 📖</code>.
     </footer>
+
+    <div class="docs-backdrop" id="docs-backdrop"></div>
+    <aside
+      class="docs-drawer"
+      id="docs-drawer"
+      role="dialog"
+      aria-modal="true"
+      aria-label="YapLang documentation"
+      aria-hidden="true"
+    >
+      <div class="docs-head">
+        <h2>📖 YapLang docs</h2>
+        <span class="spacer"></span>
+        <button class="docs-close" id="docs-close" title="Close (Esc)">
+          ✕ Close
+        </button>
+      </div>
+      <div class="docs-body" id="docs-body"></div>
+    </aside>
 
     <script type="module">
       import { run } from "./yaplang.js";
@@ -338,6 +511,345 @@ spill("size: " + howmany(squad))`,
           editor.selectionStart = editor.selectionEnd = s + 2;
         }
       });
+
+      // ---- Docs drawer -------------------------------------------------------
+      const docsBtn = document.getElementById("docs-btn");
+      const docsClose = document.getElementById("docs-close");
+      const docsDrawer = document.getElementById("docs-drawer");
+      const docsBackdrop = document.getElementById("docs-backdrop");
+      const docsBody = document.getElementById("docs-body");
+
+      const DOC_SECTIONS = [
+        {
+          h: "What is YapLang?",
+          blocks: [
+            {
+              p: `A tiny, dynamically-typed language whose keywords are Gen-Z slang. Everything you type here runs fully in your browser — there's no server. Below is the whole language; hit <code>▶ Run</code> on any snippet to drop it into the editor and run it.`,
+            },
+            {
+              p: `Comments are <code>//</code> to the end of the line. A statement ends with a newline <em>or</em> a <code>;</code> (either works). Blocks use <code>{ }</code>.`,
+            },
+          ],
+        },
+        {
+          h: "Keywords",
+          blocks: [
+            {
+              table: {
+                head: ["Concept", "Keyword"],
+                rows: [
+                  ["declare variable", "<code>vibe</code>"],
+                  ["print", "<code>spill(...)</code> <em>(built-in)</em>"],
+                  ["true / false", "<code>nocap</code> / <code>cap</code>"],
+                  ["null / empty", "<code>ghosted</code>"],
+                  ["if / else-if / else", "<code>fr</code> / <code>orfr</code> / <code>nah</code>"],
+                  ["while loop", "<code>onloop</code>"],
+                  ["for loop", "<code>grind</code>"],
+                  ["define function", "<code>bestie</code>"],
+                  ["return", "<code>bet</code>"],
+                  ["and / or / not", "<code>vibin</code> / <code>lowkey</code> / <code>sus</code>"],
+                  ["break / continue", "<code>dip</code> / <code>skrt</code>"],
+                ],
+              },
+            },
+          ],
+        },
+        {
+          h: "Types & truthiness",
+          blocks: [
+            {
+              ul: [
+                `<b>number</b> — one numeric type: <code>5</code>, <code>3.14</code>, <code>-2</code>`,
+                `<b>string</b> — double quotes only, with <code>\\n</code> <code>\\t</code> <code>\\"</code> <code>\\\\</code> escapes. <code>+</code> concatenates (a number next to a string becomes text).`,
+                `<b>boolean</b> — <code>nocap</code> (true) / <code>cap</code> (false)`,
+                `<b>ghosted</b> — the null / empty value`,
+                `<b>array</b> — <code>[1, "two", nocap]</code>, zero-indexed, assignable: <code>arr[0] = 9</code>`,
+              ],
+            },
+            {
+              p: `<b>Truthiness:</b> only <code>cap</code> and <code>ghosted</code> are falsy. <em>Everything</em> else is truthy — including <code>0</code> and <code>""</code>.`,
+            },
+          ],
+        },
+        {
+          h: "Operators",
+          blocks: [
+            {
+              ul: [
+                `<b>Arithmetic:</b> <code>+ - * / %</code>`,
+                `<b>Comparison:</b> <code>== != &lt; &gt; &lt;= &gt;=</code>`,
+                `<b>Logical (short-circuit):</b> <code>vibin</code> (and), <code>lowkey</code> (or), <code>sus</code> (not)`,
+                `<b>Unary:</b> <code>-x</code>, <code>sus x</code>`,
+              ],
+            },
+            {
+              p: `Precedence, low → high: or → and → equality → comparison → <code>+ -</code> → <code>* / %</code> → unary → call/index. Group with <code>( )</code>.`,
+            },
+          ],
+        },
+        {
+          h: "Variables — vibe",
+          blocks: [
+            {
+              cap: "variables",
+              code: `vibe name = "Avi"
+vibe age = 21
+age = age + 1          // reassign (no vibe needed)
+spill(name + " is " + age)`,
+            },
+          ],
+        },
+        {
+          h: "Conditionals — fr / orfr / nah",
+          blocks: [
+            {
+              cap: "if / else-if / else",
+              code: `vibe score = 85
+fr (score >= 90) {
+  spill("you ate that")
+} orfr (score >= 60) {
+  spill("mid but passing")
+} nah {
+  spill("it's giving fail")
+}`,
+            },
+          ],
+        },
+        {
+          h: "Loops — onloop & grind",
+          blocks: [
+            {
+              p: `<code>onloop</code> is a while loop; <code>grind</code> is a C-style for loop: <code>grind (init; cond; update)</code>. Use <code>dip</code> to break and <code>skrt</code> to continue.`,
+            },
+            {
+              cap: "onloop (while) + dip / skrt",
+              code: `vibe i = 0
+onloop (i < 10) {
+  i = i + 1
+  fr (i == 3) { skrt }   // continue
+  fr (i == 7) { dip }    // break
+  spill(i)
+}`,
+            },
+            {
+              cap: "grind (for)",
+              code: `grind (vibe j = 0; j < 5; j = j + 1) {
+  spill("rep " + j)
+}`,
+            },
+          ],
+        },
+        {
+          h: "Functions — bestie & bet",
+          blocks: [
+            {
+              p: `Declare with <code>bestie</code>, return with <code>bet</code>. Functions are first-class values and support recursion.`,
+            },
+            {
+              cap: "recursion",
+              code: `bestie add(a, b) {
+  bet a + b
+}
+
+bestie fib(n) {
+  fr (n < 2) { bet n }
+  bet fib(n - 1) + fib(n - 2)
+}
+
+spill(add(2, 3))   // 5
+spill(fib(10))     // 55`,
+            },
+            {
+              p: `They also close over their defining scope (closures):`,
+            },
+            {
+              cap: "closures",
+              code: `bestie makeCounter() {
+  vibe n = 0
+  bestie tick() { n = n + 1  bet n }
+  bet tick
+}
+vibe c = makeCounter()
+spill(c())   // 1
+spill(c())   // 2`,
+            },
+          ],
+        },
+        {
+          h: "Arrays",
+          blocks: [
+            {
+              cap: "arrays",
+              code: `vibe squad = ["zoomer", "boomer", "doomer"]
+spill(squad[0])         // zoomer
+squad[1] = "gamer"      // assign by index
+slide(squad, "framer")  // push
+spill(howmany(squad))   // 4
+spill(yoink(squad))     // framer (pop)`,
+            },
+          ],
+        },
+        {
+          h: "Built-in functions",
+          blocks: [
+            {
+              table: {
+                head: ["Function", "What it does"],
+                rows: [
+                  ["<code>spill(...args)</code>", "print args joined by a space; returns <code>ghosted</code>"],
+                  ["<code>vibecheck(x)</code>", `the type as a string: <code>"number"</code>, <code>"string"</code>, <code>"boolean"</code>, <code>"ghosted"</code>, <code>"array"</code>, <code>"function"</code>`],
+                  ["<code>howmany(x)</code>", "length of a string or array"],
+                  ["<code>glowup(s)</code>", "uppercase a string"],
+                  ["<code>chill(s)</code>", "lowercase a string"],
+                  ["<code>slide(arr, x)</code>", "push <code>x</code> onto <code>arr</code>; returns new length"],
+                  ["<code>yoink(arr)</code>", "pop &amp; return the last element (<code>ghosted</code> if empty)"],
+                  ["<code>numify(s)</code>", "parse a string into a number"],
+                ],
+              },
+            },
+          ],
+        },
+        {
+          h: "Errors",
+          blocks: [
+            {
+              p: `Errors never crash the page — they're line-numbered and written in YapLang's own dialect, and show up red in the output:`,
+            },
+            {
+              ul: [
+                `<code>💀 sus syntax at line 4: expected ')' after condition</code>`,
+                `<code>💀 fr real? at line 9: 'squadd' is not defined</code>`,
+                `<code>💀 that ain't it at line 2: can't divide by zero</code>`,
+              ],
+            },
+          ],
+        },
+      ];
+
+      function buildTable(t) {
+        const table = document.createElement("table");
+        const thead = document.createElement("thead");
+        const trh = document.createElement("tr");
+        for (const head of t.head) {
+          const th = document.createElement("th");
+          th.textContent = head;
+          trh.appendChild(th);
+        }
+        thead.appendChild(trh);
+        table.appendChild(thead);
+        const tbody = document.createElement("tbody");
+        for (const row of t.rows) {
+          const tr = document.createElement("tr");
+          for (const cell of row) {
+            const td = document.createElement("td");
+            td.innerHTML = cell;
+            tr.appendChild(td);
+          }
+          tbody.appendChild(tr);
+        }
+        table.appendChild(tbody);
+        return table;
+      }
+
+      function buildSnippet(src, caption) {
+        const wrap = document.createElement("div");
+        wrap.className = "snippet";
+
+        const bar = document.createElement("div");
+        bar.className = "snippet-bar";
+        const cap = document.createElement("span");
+        cap.className = "snippet-cap";
+        cap.textContent = caption ?? "example";
+        const actions = document.createElement("span");
+        actions.className = "snippet-actions";
+
+        const loadBtn = document.createElement("button");
+        loadBtn.textContent = "▶ Run";
+        loadBtn.title = "Load into the editor and run it";
+        loadBtn.addEventListener("click", () => {
+          editor.value = src;
+          closeDocs();
+          runCode();
+          editor.focus();
+        });
+
+        const copyBtn = document.createElement("button");
+        copyBtn.textContent = "⎘ Copy";
+        copyBtn.addEventListener("click", async () => {
+          try {
+            await navigator.clipboard.writeText(src);
+            copyBtn.textContent = "✓ Copied";
+          } catch {
+            copyBtn.textContent = "⌫ no clipboard";
+          }
+          setTimeout(() => (copyBtn.textContent = "⎘ Copy"), 1200);
+        });
+
+        actions.append(loadBtn, copyBtn);
+        bar.append(cap, actions);
+
+        const pre = document.createElement("pre");
+        const code = document.createElement("code");
+        code.textContent = src;
+        pre.appendChild(code);
+
+        wrap.append(bar, pre);
+        return wrap;
+      }
+
+      function renderDocs() {
+        for (const section of DOC_SECTIONS) {
+          const h = document.createElement("h3");
+          h.textContent = section.h;
+          docsBody.appendChild(h);
+          for (const block of section.blocks) {
+            if (block.p !== undefined) {
+              const p = document.createElement("p");
+              p.innerHTML = block.p;
+              docsBody.appendChild(p);
+            } else if (block.ul) {
+              const ul = document.createElement("ul");
+              for (const item of block.ul) {
+                const li = document.createElement("li");
+                li.innerHTML = item;
+                ul.appendChild(li);
+              }
+              docsBody.appendChild(ul);
+            } else if (block.table) {
+              docsBody.appendChild(buildTable(block.table));
+            } else if (block.code !== undefined) {
+              docsBody.appendChild(buildSnippet(block.code, block.cap));
+            }
+          }
+        }
+      }
+
+      let lastFocus = null;
+      function openDocs() {
+        lastFocus = document.activeElement;
+        docsDrawer.classList.add("open");
+        docsBackdrop.classList.add("open");
+        docsDrawer.setAttribute("aria-hidden", "false");
+        docsClose.focus();
+      }
+      function closeDocs() {
+        docsDrawer.classList.remove("open");
+        docsBackdrop.classList.remove("open");
+        docsDrawer.setAttribute("aria-hidden", "true");
+        docsBody.scrollTop = 0;
+        if (lastFocus && lastFocus.focus) lastFocus.focus();
+      }
+
+      docsBtn.addEventListener("click", openDocs);
+      docsClose.addEventListener("click", closeDocs);
+      docsBackdrop.addEventListener("click", closeDocs);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && docsDrawer.classList.contains("open")) {
+          closeDocs();
+        }
+      });
+
+      renderDocs();
 
       // Run the first example on load so the page feels alive.
       runCode();
