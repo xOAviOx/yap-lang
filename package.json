@@ -1,0 +1,53 @@
+{
+  "name": "yaplang",
+  "version": "0.1.0",
+  "description": "YapLang — a beginner-friendly toy programming language whose keywords are Gen-Z slang. Real lexer → parser → tree-walking interpreter.",
+  "type": "module",
+  "bin": {
+    "yap": "./dist/cli.js"
+  },
+  "files": [
+    "dist",
+    "examples",
+    "README.md"
+  ],
+  "main": "./dist/runner.js",
+  "module": "./dist/runner.js",
+  "types": "./dist/runner.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/runner.d.ts",
+      "import": "./dist/runner.js",
+      "require": "./dist/runner.cjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/cli.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "playground": "npm run build && npx serve playground"
+  },
+  "keywords": [
+    "programming-language",
+    "interpreter",
+    "toy-language",
+    "genz",
+    "education"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "prettier": "^3.3.0",
+    "serve": "^14.2.3",
+    "tsup": "^8.1.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0",
+    "vitest": "^1.6.0"
+  }
+}
