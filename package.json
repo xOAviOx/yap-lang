@@ -37,6 +37,17 @@
     "genz",
     "education"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xOAviOx/yap-lang.git"
+  },
+  "homepage": "https://xoaviox.github.io/yap-lang/",
+  "bugs": {
+    "url": "https://github.com/xOAviOx/yap-lang/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "MIT",
   "engines": {
     "node": ">=18"
