@@ -38,21 +38,55 @@ little language.
 
 **Requires Node.js 18+.**
 
-```bash
-# install the CLI globally
-npm i -g yaplang
+YapLang isn't published to the npm registry — you install the CLI globally
+straight from your local clone:
 
-# run a program
-yap myfile.yap
-yap examples/fizzbuzz.yap
+```bash
+git clone <this-repo> yaplang
+cd yaplang
+npm install          # pull dev deps
+npm run build        # produce dist/ (the CLI entrypoint)
+npm install -g .     # put the `yap` command on your PATH, system-wide
 ```
 
-Other CLI bits:
+That last step symlinks the global `yap` command to this project (a junction on
+Windows), so **after any source change you only need `npm run build`** — no need
+to reinstall.
+
+Verify it's available anywhere (from any directory, in any shell):
 
 ```bash
+yap --version    # -> 0.1.0
 yap --help       # usage
-yap --version    # version
 ```
+
+### Running your own `.yap` files
+
+Create a file anywhere on disk — it doesn't need to live inside this repo:
+
+```bash
+# hello.yap (put it wherever you like)
+spill("yo, I'm running YapLang 🔥")
+```
+
+Run it with the global command, from that file's folder or via a full path:
+
+```bash
+yap hello.yap                 # relative to your current directory
+yap C:\Users\you\hello.yap    # or an absolute path (Windows)
+yap /home/you/hello.yap       # or an absolute path (macOS/Linux)
+```
+
+The repo ships a `mycode.yap` scratchpad and an `examples/` folder to copy from:
+
+```bash
+yap examples/fizzbuzz.yap
+yap examples/fibonacci.yap
+yap mycode.yap
+```
+
+> **No-install option:** to run without a global install, use the dev runner
+> from inside the repo: `npm run dev -- path/to/file.yap`.
 
 ### From a clone (development)
 
