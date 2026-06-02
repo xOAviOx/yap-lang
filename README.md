@@ -103,6 +103,11 @@ npm run dev -- examples/hello.yap   # run without building (via tsx)
 
 ### The playground (zero install, runs in your browser)
 
+**▶ Try it live: https://xoaviox.github.io/yap-lang/** — no install, runs entirely
+in your browser.
+
+Or serve it locally:
+
 ```bash
 npm run playground   # builds, then serves playground/ at a local URL
 ```
