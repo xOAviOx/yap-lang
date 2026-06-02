@@ -38,26 +38,30 @@ little language.
 
 **Requires Node.js 18+.**
 
-YapLang isn't published to the npm registry — you install the CLI globally
-straight from your local clone:
-
 ```bash
-git clone <this-repo> yaplang
-cd yaplang
-npm install          # pull dev deps
-npm run build        # produce dist/ (the CLI entrypoint)
-npm install -g .     # put the `yap` command on your PATH, system-wide
+# install the CLI globally from npm
+npm i -g yaplang
 ```
-
-That last step symlinks the global `yap` command to this project (a junction on
-Windows), so **after any source change you only need `npm run build`** — no need
-to reinstall.
 
 Verify it's available anywhere (from any directory, in any shell):
 
 ```bash
 yap --version    # -> 0.1.0
 yap --help       # usage
+```
+
+Don't have npm publish access / want the latest from git? Install straight from
+the repo, or from a local clone:
+
+```bash
+npm i -g github:xOAviOx/yap-lang   # from GitHub
+
+# …or from a clone (also the dev setup)
+git clone https://github.com/xOAviOx/yap-lang.git
+cd yap-lang
+npm install
+npm run build
+npm install -g .                   # symlinks `yap`; after edits just re-run `npm run build`
 ```
 
 ### Running your own `.yap` files
