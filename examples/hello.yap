@@ -1,7 +1,7 @@
 // hello.yap — the classic, YapLang style
 
-vibe name = "Avi"
-vibe age = 21
+vibe lang = "YapLang"
+vibe year = 2026
 
-spill("yo " + name + ", age " + age)
-spill("welcome to YapLang fr fr 🔥")
+spill("yo, welcome to " + lang + " 🔥")
+spill("it's giving " + year + " energy fr fr")

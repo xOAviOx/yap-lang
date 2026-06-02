@@ -150,9 +150,10 @@ Comments are `//` to end of line. Statements end with a newline **or** a `;`
 ### Variables + output
 
 ```yap
-vibe name = "Avi"
-vibe age = 21
-spill("yo " + name + ", age " + age)   // yo Avi, age 21
+vibe lang = "YapLang"
+vibe year = 2026
+spill("yo, welcome to " + lang + " 🔥")
+spill("it's giving " + year + " energy fr fr")   // number coerced to text
 ```
 
 Strings use double quotes and support `\n`, `\t`, `\"`, `\\`. `+` concatenates;
