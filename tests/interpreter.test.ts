@@ -25,8 +25,8 @@ function lines(source: string): string[] {
 describe("interpreter — section 3.4 examples", () => {
   it("variables + output (string/number concat)", () => {
     expect(
-      lines('vibe name = "Avi"\nvibe age = 21\nspill("yo " + name + ", age " + age)'),
-    ).toEqual(["yo Avi, age 21"]);
+      lines('vibe lang = "YapLang"\nvibe year = 2026\nspill("yo, welcome to " + lang + ", year " + year)'),
+    ).toEqual(["yo, welcome to YapLang, year 2026"]);
   });
 
   it("if / orfr / nah", () => {
@@ -228,7 +228,7 @@ describe("example programs (definition of done)", () => {
   }
 
   it("hello.yap", () => {
-    expect(runFile("hello.yap")[0]).toBe("yo Avi, age 21");
+    expect(runFile("hello.yap")[0]).toBe("yo, welcome to YapLang 🔥");
   });
 
   it("fizzbuzz.yap prints correct FizzBuzz 1–20", () => {
