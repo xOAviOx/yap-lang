@@ -15,11 +15,11 @@ function only(source: string): Stmt {
 
 describe("parser", () => {
   it("parses a variable declaration", () => {
-    const stmt = only('vibe name = "Avi"');
+    const stmt = only('vibe lang = "YapLang"');
     expect(stmt).toMatchObject({
       kind: "VarDecl",
-      name: "name",
-      initializer: { kind: "StringLiteral", value: "Avi" },
+      name: "lang",
+      initializer: { kind: "StringLiteral", value: "YapLang" },
     });
   });
 
