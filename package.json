@@ -4,7 +4,7 @@
   "description": "YapLang — a beginner-friendly toy programming language whose keywords are Gen-Z slang. Real lexer → parser → tree-walking interpreter.",
   "type": "module",
   "bin": {
-    "yap": "./dist/cli.js"
+    "yap": "dist/cli.js"
   },
   "files": [
     "dist",
