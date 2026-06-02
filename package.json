@@ -28,7 +28,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
     "format": "prettier --write .",
-    "playground": "npm run build && npx serve playground"
+    "playground": "npm run build && npx serve playground",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "programming-language",
