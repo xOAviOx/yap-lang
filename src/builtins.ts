@@ -6,6 +6,7 @@
  * catches it at the call site and attaches the line number.
  */
 //
+//
 import { BuiltinError } from "./errors.js";
 import {
   CallContext,
