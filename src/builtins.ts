@@ -5,7 +5,7 @@
  * Built-ins signal bad arguments by throwing `BuiltinError`; the interpreter
  * catches it at the call site and attaches the line number.
  */
-
+//
 import { BuiltinError } from "./errors.js";
 import {
   CallContext,
